@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pop Face! 🫧</title>
+    <meta name="description" content="Pop Face - A fun clicker game! Click the face to pop it! Challenge your friends!">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+
+        /* ===== ANIMATED BACKGROUND ===== */
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: floatBlob 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .blob-1 {
+            width: 300px;
+            height: 300px;
+            background: #ff6b9d;
+            top: -100px;
+            left: -100px;
+        }
+
+        .blob-2 {
+            width: 250px;
+            height: 250px;
+            background: #c44dff;
+            bottom: -80px;
+            right: -80px;
+            animation-delay: -3s;
+        }
+
+        .blob-3 {
+            width: 200px;
+            height: 200px;
+            background: #4dc9f6;
+            top: 50%;
+            left: 50%;
+            animation-delay: -5s;
+        }
+
+        @keyframes floatBlob {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            z-index: 10;
+            text-align: center;
+            margin-bottom: 12px;
+            animation: fadeInUp 0.5s ease both;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff6b9d, #c44dff, #4dc9f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.03);
+            }
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        /* ===== COUNTER ===== */
+        .counter-container {
+            z-index: 10;
+            margin-bottom: 16px;
+            animation: fadeInUp 0.5s ease 0.2s both;
+        }
+
+        .counter {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #fff;
+            text-align: center;
+            transition: transform 0.1s ease;
+        }
+
+        .counter.pop {
+            animation: counterPop 0.2s ease;
+        }
+
+        @keyframes counterPop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.3);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .counter-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.35);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 600;
+        }
+
+        /* ===== FACE ===== */
+        .face-wrapper {
+            z-index: 10;
+            position: relative;
+            animation: bounceIn 0.6s ease both;
+        }
+
+        .face-container {
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.1s ease;
+            box-shadow: 0 0 30px rgba(196, 77, 255, 0.3), 0 0 60px rgba(255, 107, 157, 0.15), 0 10px 40px rgba(0, 0, 0, 0.4);
+            border: 4px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .face-container:hover {
+            box-shadow: 0 0 40px rgba(196, 77, 255, 0.5), 0 0 80px rgba(255, 107, 157, 0.25), 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .face-container.squish {
+            animation: squish 0.15s ease;
+        }
+
+        @keyframes squish {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(0.9) rotate(-2deg);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .face-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            pointer-events: none;
+        }
+
+        .glow-ring {
+            position: absolute;
+            width: 272px;
+            height: 272px;
+            border-radius: 50%;
+            border: 2px solid rgba(196, 77, 255, 0.3);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: glowPulse 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes glowPulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.08);
+                opacity: 0.2;
+            }
+        }
+
+        .pop-ring {
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            border: 3px solid #c44dff;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .pop-ring.active {
+            animation: popRingExpand 0.5s ease-out forwards;
+        }
+
+        @keyframes popRingExpand {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1.6);
+                opacity: 0;
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* ===== FLOATING EMOJIS ===== */
+        .float-emoji {
+            position: fixed;
+            font-size: 2rem;
+            pointer-events: none;
+            z-index: 100;
+            animation: floatUp 1s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotate(0deg);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-120px) scale(0.5) rotate(30deg);
+            }
+        }
+
+        /* ===== SPEED INDICATOR ===== */
+        .speed-indicator {
+            z-index: 10;
+            margin-top: 6px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.25);
+            height: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .speed-indicator.fast {
+            color: #ff6b9d;
+            font-weight: 600;
+        }
+
+        .speed-indicator.blazing {
+            color: #ffd700;
+            font-weight: 800;
+            animation: blazeText 0.3s ease infinite alternate;
+        }
+
+        @keyframes blazeText {
+            from {
+                text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            }
+
+            to {
+                text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            }
+        }
+
+        /* ===== BOTTOM BAR ===== */
+        .bottom-bar {
+            z-index: 10;
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.5);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.8);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .btn-rank {
+            background: linear-gradient(135deg, rgba(196, 77, 255, 0.2), rgba(255, 107, 157, 0.2));
+            border-color: rgba(196, 77, 255, 0.3);
+        }
+
+        .btn-rank:hover {
+            background: linear-gradient(135deg, rgba(196, 77, 255, 0.35), rgba(255, 107, 157, 0.35));
+        }
+
+        .btn-share {
+            background: linear-gradient(135deg, rgba(77, 201, 246, 0.2), rgba(196, 77, 255, 0.2));
+            border-color: rgba(77, 201, 246, 0.3);
+        }
+
+        .btn-share:hover {
+            background: linear-gradient(135deg, rgba(77, 201, 246, 0.35), rgba(196, 77, 255, 0.35));
+        }
+
+        /* ===== MILESTONE POPUP ===== */
+        .milestone {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 40px rgba(196, 77, 255, 0.8);
+            z-index: 200;
+            pointer-events: none;
+            opacity: 0;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .milestone.show {
+            animation: milestoneShow 1.2s ease-out forwards;
+        }
+
+        @keyframes milestoneShow {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+
+            20% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+
+            40% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        /* ===== 67 MEME SPECIAL ===== */
+        .meme-67 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 300;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .meme-67.active {
+            animation: shake67 0.6s ease;
+        }
+
+        @keyframes shake67 {
+            0% {
+                opacity: 1;
+                transform: translate(0);
+            }
+
+            10% {
+                transform: translate(-8px, 4px);
+            }
+
+            20% {
+                transform: translate(8px, -4px);
+            }
+
+            30% {
+                transform: translate(-6px, 6px);
+            }
+
+            40% {
+                transform: translate(6px, -6px);
+            }
+
+            50% {
+                transform: translate(-4px, 2px);
+            }
+
+            60% {
+                transform: translate(4px, -2px);
+            }
+
+            70% {
+                transform: translate(-2px, 4px);
+            }
+
+            80% {
+                transform: translate(2px, -4px);
+            }
+
+            90% {
+                transform: translate(-1px, 1px);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(0);
+            }
+        }
+
+        .meme-67-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 6rem;
+            font-weight: 900;
+            z-index: 310;
+            pointer-events: none;
+            color: #ff0000;
+            text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000, 0 0 80px #ff0000, 4px 4px 0 #000;
+            opacity: 0;
+        }
+
+        .meme-67-text.active {
+            animation: meme67TextShow 1.5s ease-out forwards;
+        }
+
+        @keyframes meme67TextShow {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(-20deg);
+                opacity: 0;
+            }
+
+            15% {
+                transform: translate(-50%, -50%) scale(2) rotate(5deg);
+                opacity: 1;
+            }
+
+            30% {
+                transform: translate(-50%, -50%) scale(1.5) rotate(-3deg);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.6) rotate(2deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(0.5) rotate(0deg);
+                opacity: 0;
+            }
+        }
+
+        body.screen-flash {
+            animation: screenFlash 0.3s ease;
+        }
+
+        @keyframes screenFlash {
+            0% {
+                filter: brightness(1);
+            }
+
+            50% {
+                filter: brightness(3) saturate(2);
+            }
+
+            100% {
+                filter: brightness(1);
+            }
+        }
+
+        /* ===== NAME MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.hidden {
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 1px solid rgba(196, 77, 255, 0.3);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 340px;
+            width: 90%;
+            text-align: center;
+            animation: modalBounce 0.4s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(196, 77, 255, 0.15);
+        }
+
+        @keyframes modalBounce {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-emoji {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .modal-subtitle {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 16px;
+            border: 2px solid rgba(196, 77, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .modal-input:focus {
+            border-color: #c44dff;
+        }
+
+        .modal-input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .modal-btn {
+            margin-top: 16px;
+            width: 100%;
+            padding: 14px;
+            border-radius: 16px;
+            border: none;
+            background: linear-gradient(135deg, #c44dff, #ff6b9d);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 20px rgba(196, 77, 255, 0.4);
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 30px rgba(196, 77, 255, 0.6);
+        }
+
+        .modal-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* ===== LEADERBOARD PANEL ===== */
+        .leaderboard-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .leaderboard-overlay.hidden {
+            display: none;
+        }
+
+        .leaderboard-panel {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 1px solid rgba(196, 77, 255, 0.25);
+            border-radius: 24px;
+            padding: 28px;
+            max-width: 380px;
+            width: 92%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalBounce 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(196, 77, 255, 0.1);
+        }
+
+        .lb-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .lb-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .lb-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .lb-close:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .lb-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            border-radius: 14px;
+            margin-bottom: 6px;
+            transition: all 0.2s ease;
+            gap: 12px;
+        }
+
+        .lb-row:nth-child(1) {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .lb-row:nth-child(2) {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.12), rgba(192, 192, 192, 0.04));
+            border: 1px solid rgba(192, 192, 192, 0.15);
+        }
+
+        .lb-row:nth-child(3) {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.12), rgba(205, 127, 50, 0.04));
+            border: 1px solid rgba(205, 127, 50, 0.15);
+        }
+
+        .lb-row:nth-child(n+4) {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .lb-row.me {
+            box-shadow: 0 0 15px rgba(196, 77, 255, 0.2);
+            border-color: rgba(196, 77, 255, 0.4) !important;
+        }
+
+        .lb-rank {
+            font-size: 1.1rem;
+            font-weight: 800;
+            min-width: 32px;
+            text-align: center;
+        }
+
+        .lb-row:nth-child(1) .lb-rank {
+            color: #ffd700;
+        }
+
+        .lb-row:nth-child(2) .lb-rank {
+            color: #c0c0c0;
+        }
+
+        .lb-row:nth-child(3) .lb-rank {
+            color: #cd7f32;
+        }
+
+        .lb-row:nth-child(n+4) .lb-rank {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .lb-name {
+            flex: 1;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .lb-score {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #c44dff;
+        }
+
+        .lb-empty {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.3);
+            padding: 30px 0;
+            font-size: 0.9rem;
+        }
+
+        .lb-medals {
+            font-size: 1.2rem;
+        }
+
+        /* ===== PLAYER INFO BAR ===== */
+        .player-bar {
+            z-index: 10;
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .player-bar:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .player-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4dc9f6;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 12px 24px;
+            border-radius: 16px;
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 600;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 400px) {
+            .title {
+                font-size: 1.8rem;
+            }
+
+            .counter {
+                font-size: 2.8rem;
+            }
+
+            .face-container {
+                width: 210px;
+                height: 210px;
+            }
+
+            .glow-ring {
+                width: 222px;
+                height: 222px;
+            }
+
+            .pop-ring {
+                width: 210px;
+                height: 210px;
+            }
+
+            .meme-67-text {
+                font-size: 4rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .face-container {
+                width: 320px;
+                height: 320px;
+            }
+
+            .glow-ring {
+                width: 335px;
+                height: 335px;
+            }
+
+            .pop-ring {
+                width: 320px;
+                height: 320px;
+            }
+
+            .title {
+                font-size: 2.8rem;
+            }
+
+            .counter {
+                font-size: 4.5rem;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tap hint */
+        .tap-hint {
+            z-index: 10;
+            margin-top: 10px;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.25);
+            animation: fadeInUp 1s ease 0.5s both;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- Player info bar -->
+    <div class="player-bar" id="playerBar" title="Click to change name">
+        <div class="player-dot"></div>
+        <span id="playerName">...</span>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1 class="title">Pop Face! 🫧</h1>
+        <p class="subtitle">click the face. you know you want to.</p>
+    </div>
+
+    <!-- Counter -->
+    <div class="counter-container">
+        <div class="counter" id="counter">0</div>
+        <div class="counter-label">pops</div>
+    </div>
+
+    <!-- Face -->
+    <div class="face-wrapper">
+        <div class="glow-ring"></div>
+        <div class="pop-ring" id="popRing"></div>
+        <div class="face-container" id="faceContainer">
+            <img id="faceImg" src="face1.jpg" alt="Pop Face">
+        </div>
+    </div>
+
+    <!-- Speed indicator -->
+    <div class="speed-indicator" id="speedIndicator"></div>
+
+    <!-- Tap hint -->
+    <div class="tap-hint">👆 tap the face!</div>
+
+    <!-- Bottom buttons -->
+    <div class="bottom-bar">
+        <button class="btn" id="resetBtn">🔄 Reset</button>
+        <button class="btn btn-rank" id="rankBtn">🏆 Rankings</button>
+        <button class="btn btn-share" id="shareBtn">📤 Share</button>
+    </div>
+
+    <!-- Milestone popup -->
+    <div class="milestone" id="milestone"></div>
+
+    <!-- 67 meme elements -->
+    <div class="meme-67" id="meme67Overlay"></div>
+    <div class="meme-67-text" id="meme67Text">67 💀</div>
+
+    <!-- Name entry modal -->
+    <div class="modal-overlay" id="nameModal">
+        <div class="modal">
+            <div class="modal-emoji">🫧</div>
+            <div class="modal-title">Welcome to Pop Face!</div>
+            <div class="modal-subtitle">What should we call you?</div>
+            <input type="text" class="modal-input" id="nameInput" placeholder="Your name..." maxlength="20"
+                autocomplete="off">
+            <button class="modal-btn" id="nameSubmit">Let's Pop! 🎉</button>
+        </div>
+    </div>
+
+    <!-- Leaderboard Panel -->
+    <div class="leaderboard-overlay hidden" id="leaderboardOverlay">
+        <div class="leaderboard-panel">
+            <div class="lb-header">
+                <div class="lb-title">🏆 Rankings</div>
+                <button class="lb-close" id="lbClose">✕</button>
+            </div>
+            <div id="leaderboardList"></div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ========== STATE ==========
+        let count = 0;
+        let isOpen = false;
+        let clickTimes = [];
+        let audioCtx = null;
+        let playerName = '';
+        let sessionBest = 0;
+
+        // ========== ELEMENTS ==========
+        const counterEl = document.getElementById('counter');
+        const faceContainer = document.getElementById('faceContainer');
+        const faceImg = document.getElementById('faceImg');
+        const popRing = document.getElementById('popRing');
+        const resetBtn = document.getElementById('resetBtn');
+        const rankBtn = document.getElementById('rankBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const milestoneEl = document.getElementById('milestone');
+        const speedIndicator = document.getElementById('speedIndicator');
+        const nameModal = document.getElementById('nameModal');
+        const nameInput = document.getElementById('nameInput');
+        const nameSubmit = document.getElementById('nameSubmit');
+        const playerNameEl = document.getElementById('playerName');
+        const playerBar = document.getElementById('playerBar');
+        const leaderboardOverlay = document.getElementById('leaderboardOverlay');
+        const leaderboardList = document.getElementById('leaderboardList');
+        const lbClose = document.getElementById('lbClose');
+        const toastEl = document.getElementById('toast');
+        const meme67Overlay = document.getElementById('meme67Overlay');
+        const meme67Text = document.getElementById('meme67Text');
+
+        // ========== INIT ==========
+        function init() {
+            // Check for saved name
+            const savedName = localStorage.getItem('popFaceName');
+            if (savedName) {
+                playerName = savedName;
+                nameModal.classList.add('hidden');
+                playerNameEl.textContent = playerName;
+            }
+
+            // Load saved count
+            count = parseInt(localStorage.getItem('popFaceCount') || '0');
+            counterEl.textContent = count.toLocaleString();
+
+            // Preload face2
+            const preloadImg = new Image();
+            preloadImg.src = 'face2.jpg';
+        }
+
+        init();
+
+        // ========== NAME MODAL ==========
+        nameSubmit.addEventListener('click', submitName);
+        nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitName(); });
+
+        function submitName() {
+            const name = nameInput.value.trim();
+            if (!name) { nameInput.style.borderColor = '#ff4444'; return; }
+            playerName = name;
+            localStorage.setItem('popFaceName', name);
+            playerNameEl.textContent = name;
+            nameModal.classList.add('hidden');
+            showToast('Welcome, ' + name + '! 🫧');
+        }
+
+        // Change name by clicking player bar
+        playerBar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            nameInput.value = playerName;
+            nameModal.classList.remove('hidden');
+            nameInput.focus();
+        });
+
+        // ========== AUDIO ==========
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playPop() {
+            initAudio();
+            if (!audioCtx) return;
+            const t = audioCtx.currentTime;
+
+            // Main pop tone
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, t);
+            osc.frequency.exponentialRampToValueAtTime(300, t + 0.08);
+            gain.gain.setValueAtTime(0.35, t);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(t); osc.stop(t + 0.12);
+
+            // Sub bass
+            const osc2 = audioCtx.createOscillator();
+            const gain2 = audioCtx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(150, t);
+            osc2.frequency.exponentialRampToValueAtTime(50, t + 0.05);
+            gain2.gain.setValueAtTime(0.25, t);
+            gain2.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
+            osc2.connect(gain2); gain2.connect(audioCtx.destination);
+            osc2.start(t); osc2.stop(t + 0.1);
+        }
+
+        function playVineBoom() {
+            // 🔥 THE LEGENDARY VINE BOOM / BASS BOOSTED MEME SOUND 🔥
+            initAudio();
+            if (!audioCtx) return;
+            const t = audioCtx.currentTime;
+
+            // Ultra deep bass hit
+            const osc1 = audioCtx.createOscillator();
+            const gain1 = audioCtx.createGain();
+            const dist = audioCtx.createWaveShaper();
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(80, t);
+            osc1.frequency.exponentialRampToValueAtTime(25, t + 0.4);
+            gain1.gain.setValueAtTime(0.8, t);
+            gain1.gain.setValueAtTime(0.8, t + 0.05);
+            gain1.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
+
+            // Distortion curve for that crunchy bass
+            const curve = new Float32Array(256);
+            for (let i = 0; i < 256; i++) {
+                const x = (i * 2) / 256 - 1;
+                curve[i] = (Math.PI + 200) * x / (Math.PI + 200 * Math.abs(x));
+            }
+            dist.curve = curve;
+
+            osc1.connect(dist); dist.connect(gain1); gain1.connect(audioCtx.destination);
+            osc1.start(t); osc1.stop(t + 0.6);
+
+            // Impact transient
+            const osc2 = audioCtx.createOscillator();
+            const gain2 = audioCtx.createGain();
+            osc2.type = 'square';
+            osc2.frequency.setValueAtTime(200, t);
+            osc2.frequency.exponentialRampToValueAtTime(40, t + 0.15);
+            gain2.gain.setValueAtTime(0.5, t);
+            gain2.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+            osc2.connect(gain2); gain2.connect(audioCtx.destination);
+            osc2.start(t); osc2.stop(t + 0.25);
+
+            // Mid crack
+            const osc3 = audioCtx.createOscillator();
+            const gain3 = audioCtx.createGain();
+            osc3.type = 'sawtooth';
+            osc3.frequency.setValueAtTime(500, t);
+            osc3.frequency.exponentialRampToValueAtTime(60, t + 0.1);
+            gain3.gain.setValueAtTime(0.3, t);
+            gain3.gain.exponentialRampToValueAtTime(0.01, t + 0.12);
+            osc3.connect(gain3); gain3.connect(audioCtx.destination);
+            osc3.start(t); osc3.stop(t + 0.15);
+
+            // Noise burst for impact
+            const bufferSize = audioCtx.sampleRate * 0.1;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const noiseData = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                noiseData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.1));
+            }
+            const noiseSource = audioCtx.createBufferSource();
+            const noiseGain = audioCtx.createGain();
+            noiseSource.buffer = noiseBuffer;
+            noiseGain.gain.setValueAtTime(0.15, t);
+            noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+            noiseSource.connect(noiseGain); noiseGain.connect(audioCtx.destination);
+            noiseSource.start(t);
+        }
+
+        // ========== EMOJIS ==========
+        const emojis = ['🫧', '💥', '✨', '⭐', '💫', '🔥', '💀', '😂', '🤣', '💅', '👑', '🎉'];
+
+        function spawnEmoji(x, y) {
+            const emoji = document.createElement('div');
+            emoji.className = 'float-emoji';
+            emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            emoji.style.left = (x + (Math.random() - 0.5) * 60) + 'px';
+            emoji.style.top = y + 'px';
+            document.body.appendChild(emoji);
+            setTimeout(() => emoji.remove(), 1000);
+        }
+
+        // ========== SPEED TRACKING ==========
+        function updateSpeed() {
+            const now = Date.now();
+            clickTimes.push(now);
+            clickTimes = clickTimes.filter(t => now - t < 2000);
+            const cps = clickTimes.length / 2;
+
+            if (cps > 8) {
+                speedIndicator.textContent = '🔥 BLAZING ' + cps.toFixed(1) + ' pops/sec!';
+                speedIndicator.className = 'speed-indicator blazing';
+            } else if (cps > 4) {
+                speedIndicator.textContent = '⚡ ' + cps.toFixed(1) + ' pops/sec';
+                speedIndicator.className = 'speed-indicator fast';
+            } else {
+                speedIndicator.textContent = cps.toFixed(1) + ' pops/sec';
+                speedIndicator.className = 'speed-indicator';
+            }
+        }
+
+        // ========== MILESTONES ==========
+        const milestones = [10, 25, 50, 67, 100, 200, 500, 1000, 2000, 5000, 10000];
+        const milestoneMessages = {
+            10: '10! 🎉 Nice!',
+            25: '25! 🔥 Warming up!',
+            50: '50! 💪 Beast!',
+            67: '67 💀',
+            100: '100! 🏆 LEGEND!',
+            200: '200! 👑 INSANE!',
+            500: '500! 💀 UNSTOPPABLE!',
+            1000: '1K! 🤯 GODLIKE!',
+            2000: '2K! 🌟 TRANSCENDED!',
+            5000: '5K! 🚀 ASCENDED!',
+            10000: '10K! 🫧 POP MASTER!'
+        };
+
+        function checkMilestone() {
+            if (!milestones.includes(count)) return;
+
+            // Special 67 handler
+            if (count === 67) {
+                trigger67Meme();
+                return;
+            }
+
+            milestoneEl.textContent = milestoneMessages[count];
+            milestoneEl.className = 'milestone show';
+            const rect = faceContainer.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => spawnEmoji(cx, cy), i * 50);
+            }
+            setTimeout(() => { milestoneEl.className = 'milestone'; }, 1200);
+        }
+
+        // ========== 67 MEME ==========
+        function trigger67Meme() {
+            // Play the vine boom 💀
+            playVineBoom();
+
+            // Screen flash
+            document.body.classList.add('screen-flash');
+            setTimeout(() => document.body.classList.remove('screen-flash'), 300);
+
+            // Screen shake overlay
+            meme67Overlay.classList.remove('active');
+            void meme67Overlay.offsetWidth;
+            meme67Overlay.classList.add('active');
+
+            // Big 67 text
+            meme67Text.classList.remove('active');
+            void meme67Text.offsetWidth;
+            meme67Text.classList.add('active');
+            setTimeout(() => { meme67Text.classList.remove('active'); }, 1500);
+
+            // Massive emoji burst
+            const rect = faceContainer.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const memeEmojis = ['💀', '💀', '💀', '🗿', '😈', '🔥', '⚠️', '‼️'];
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.className = 'float-emoji';
+                    emoji.textContent = memeEmojis[Math.floor(Math.random() * memeEmojis.length)];
+                    emoji.style.left = (cx + (Math.random() - 0.5) * 200) + 'px';
+                    emoji.style.top = (cy + (Math.random() - 0.5) * 200) + 'px';
+                    emoji.style.fontSize = (1.5 + Math.random() * 2) + 'rem';
+                    document.body.appendChild(emoji);
+                    setTimeout(() => emoji.remove(), 1000);
+                }, i * 40);
+            }
+        }
+
+        // ========== LEADERBOARD ==========
+        function getLeaderboard() {
+            const lb = JSON.parse(localStorage.getItem('popFaceLeaderboard') || '[]');
+            return lb;
+        }
+
+        function saveToLeaderboard() {
+            if (!playerName) return;
+            let lb = getLeaderboard();
+
+            // Find existing entry for this player
+            const existing = lb.find(e => e.name === playerName);
+            if (existing) {
+                if (count > existing.score) {
+                    existing.score = count;
+                    existing.date = new Date().toLocaleDateString();
+                }
+            } else {
+                lb.push({ name: playerName, score: count, date: new Date().toLocaleDateString() });
+            }
+
+            // Sort by score descending, keep top 20
+            lb.sort((a, b) => b.score - a.score);
+            lb = lb.slice(0, 20);
+            localStorage.setItem('popFaceLeaderboard', JSON.stringify(lb));
+        }
+
+        function renderLeaderboard() {
+            const lb = getLeaderboard();
+            if (lb.length === 0) {
+                leaderboardList.innerHTML = '<div class="lb-empty">No scores yet! Start popping! 🫧</div>';
+                return;
+            }
+
+            const medals = ['🥇', '🥈', '🥉'];
+            leaderboardList.innerHTML = lb.map((entry, i) => {
+                const medal = i < 3 ? `<span class="lb-medals">${medals[i]}</span>` : '';
+                const isMe = entry.name === playerName;
+                return `
+                    <div class="lb-row ${isMe ? 'me' : ''}">
+                        <div class="lb-rank">${medal || '#' + (i + 1)}</div>
+                        <div class="lb-name">${escapeHtml(entry.name)}</div>
+                        <div class="lb-score">${entry.score.toLocaleString()}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // ========== TOAST ==========
+        let toastTimeout;
+        function showToast(msg) {
+            toastEl.textContent = msg;
+            toastEl.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toastEl.classList.remove('show'), 2000);
+        }
+
+        // ========== SHARE ==========
+        function shareScore() {
+            const text = `🫧 Pop Face! 🫧\n\nI got ${count.toLocaleString()} pops! 💀\nCan you beat me?\n\nPlay now: ${window.location.href}`;
+
+            if (navigator.share) {
+                navigator.share({ title: 'Pop Face!', text: text, url: window.location.href }).catch(() => { });
+            } else if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Score copied! Send to friends! 📤');
+                }).catch(() => {
+                    showToast('Share this link with friends!');
+                });
+            } else {
+                showToast('Share this link with friends!');
+            }
+        }
+
+        // ========== MAIN CLICK HANDLER ==========
+        function handlePop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!playerName) return; // Must enter name first
+
+            // Toggle face
+            isOpen = !isOpen;
+            faceImg.src = isOpen ? 'face2.jpg' : 'face1.jpg';
+
+            // Increment counter
+            count++;
+            counterEl.textContent = count.toLocaleString();
+            localStorage.setItem('popFaceCount', count);
+
+            // Save to leaderboard periodically
+            if (count % 5 === 0 || milestones.includes(count)) {
+                saveToLeaderboard();
+            }
+
+            // Play sound (not for 67 — that has its own sound)
+            if (count !== 67) {
+                playPop();
+            }
+
+            // Animate counter
+            counterEl.classList.remove('pop');
+            void counterEl.offsetWidth;
+            counterEl.classList.add('pop');
+
+            // Squish face
+            faceContainer.classList.remove('squish');
+            void faceContainer.offsetWidth;
+            faceContainer.classList.add('squish');
+
+            // Pop ring effect
+            popRing.classList.remove('active');
+            void popRing.offsetWidth;
+            popRing.classList.add('active');
+
+            // Spawn emoji
+            const rect = faceContainer.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top;
+            spawnEmoji(x, y);
+
+            // Speed
+            updateSpeed();
+
+            // Milestones
+            checkMilestone();
+        }
+
+        // ========== EVENT LISTENERS ==========
+        faceContainer.addEventListener('mousedown', handlePop);
+        faceContainer.addEventListener('touchstart', handlePop, { passive: false });
+        faceContainer.addEventListener('touchend', (e) => e.preventDefault());
+
+        resetBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Save current score before reset
+            saveToLeaderboard();
+            count = 0;
+            counterEl.textContent = '0';
+            localStorage.setItem('popFaceCount', 0);
+            clickTimes = [];
+            speedIndicator.textContent = '';
+            speedIndicator.className = 'speed-indicator';
+            isOpen = false;
+            faceImg.src = 'face1.jpg';
+            showToast('Reset! Go again! 🔄');
+        });
+
+        rankBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            saveToLeaderboard();
+            renderLeaderboard();
+            leaderboardOverlay.classList.remove('hidden');
+        });
+
+        lbClose.addEventListener('click', (e) => {
+            e.stopPropagation();
+            leaderboardOverlay.classList.add('hidden');
+        });
+
+        leaderboardOverlay.addEventListener('click', (e) => {
+            if (e.target === leaderboardOverlay) leaderboardOverlay.classList.add('hidden');
+        });
+
+        shareBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            shareScore();
+        });
+
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        // Clear speed when idle
+        setInterval(() => {
+            const now = Date.now();
+            clickTimes = clickTimes.filter(t => now - t < 2000);
+            if (clickTimes.length === 0) {
+                speedIndicator.textContent = '';
+                speedIndicator.className = 'speed-indicator';
+            }
+        }, 1000);
+
+        // Auto-save on page leave
+        window.addEventListener('beforeunload', () => {
+            saveToLeaderboard();
+        });
+    </script>
+</body>
+
+</html>
