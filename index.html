@@ -964,6 +964,9 @@
             animation: fadeInUp 1s ease 0.5s both;
         }
     </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 
 <body>
@@ -1035,7 +1038,7 @@
     <div class="leaderboard-overlay hidden" id="leaderboardOverlay">
         <div class="leaderboard-panel">
             <div class="lb-header">
-                <div class="lb-title">🏆 Rankings</div>
+                <div class="lb-title">🏆 Global Rankings</div>
                 <button class="lb-close" id="lbClose">✕</button>
             </div>
             <div id="leaderboardList"></div>
@@ -1046,6 +1049,24 @@
     <div class="toast" id="toast"></div>
 
     <script>
+        // ========== FIREBASE CONFIG ==========
+        // 🔥 PASTE YOUR FIREBASE DATABASE URL BELOW 🔥
+        const FIREBASE_DB_URL = 'YOUR_FIREBASE_DATABASE_URL_HERE';
+
+        // Initialize Firebase
+        let firebaseReady = false;
+        try {
+            if (FIREBASE_DB_URL && FIREBASE_DB_URL !== 'YOUR_FIREBASE_DATABASE_URL_HERE') {
+                firebase.initializeApp({ databaseURL: FIREBASE_DB_URL });
+                firebaseReady = true;
+                console.log('🔥 Firebase connected!');
+            } else {
+                console.warn('⚠️ Firebase URL not set. Using local leaderboard only.');
+            }
+        } catch (e) {
+            console.warn('⚠️ Firebase init failed:', e);
+        }
+
         // ========== STATE ==========
         let count = 0;
         let isOpen = false;
@@ -1328,17 +1349,20 @@
             }
         }
 
-        // ========== LEADERBOARD ==========
-        function getLeaderboard() {
-            const lb = JSON.parse(localStorage.getItem('popFaceLeaderboard') || '[]');
-            return lb;
+        // ========== LEADERBOARD (FIREBASE + LOCAL FALLBACK) ==========
+        function getLocalLeaderboard() {
+            return JSON.parse(localStorage.getItem('popFaceLeaderboard') || '[]');
+        }
+
+        function saveLocalLeaderboard(lb) {
+            localStorage.setItem('popFaceLeaderboard', JSON.stringify(lb));
         }
 
         function saveToLeaderboard() {
-            if (!playerName) return;
-            let lb = getLeaderboard();
+            if (!playerName || count === 0) return;
 
-            // Find existing entry for this player
+            // Always save locally
+            let lb = getLocalLeaderboard();
             const existing = lb.find(e => e.name === playerName);
             if (existing) {
                 if (count > existing.score) {
@@ -1348,15 +1372,58 @@
             } else {
                 lb.push({ name: playerName, score: count, date: new Date().toLocaleDateString() });
             }
-
-            // Sort by score descending, keep top 20
             lb.sort((a, b) => b.score - a.score);
-            lb = lb.slice(0, 20);
-            localStorage.setItem('popFaceLeaderboard', JSON.stringify(lb));
+            lb = lb.slice(0, 50);
+            saveLocalLeaderboard(lb);
+
+            // Save to Firebase if available
+            if (firebaseReady) {
+                const safeKey = playerName.replace(/[.#$\/\[\]]/g, '_');
+                const ref = firebase.database().ref('leaderboard/' + safeKey);
+                ref.once('value').then(snapshot => {
+                    const data = snapshot.val();
+                    if (!data || count > data.score) {
+                        ref.set({
+                            name: playerName,
+                            score: count,
+                            date: new Date().toISOString()
+                        });
+                    }
+                }).catch(e => console.warn('Firebase save error:', e));
+            }
         }
 
         function renderLeaderboard() {
-            const lb = getLeaderboard();
+            // Show loading
+            leaderboardList.innerHTML = '<div class="lb-empty">Loading rankings... ⏳</div>';
+
+            if (firebaseReady) {
+                // Fetch from Firebase — global leaderboard!
+                firebase.database().ref('leaderboard')
+                    .orderByChild('score')
+                    .limitToLast(20)
+                    .once('value')
+                    .then(snapshot => {
+                        const entries = [];
+                        snapshot.forEach(child => {
+                            entries.push(child.val());
+                        });
+                        // Sort descending (Firebase orders ascending)
+                        entries.sort((a, b) => b.score - a.score);
+                        displayLeaderboard(entries);
+                    })
+                    .catch(e => {
+                        console.warn('Firebase read error:', e);
+                        // Fallback to local
+                        displayLeaderboard(getLocalLeaderboard());
+                    });
+            } else {
+                // No Firebase — show local only
+                displayLeaderboard(getLocalLeaderboard());
+            }
+        }
+
+        function displayLeaderboard(lb) {
             if (lb.length === 0) {
                 leaderboardList.innerHTML = '<div class="lb-empty">No scores yet! Start popping! 🫧</div>';
                 return;
