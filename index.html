@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Pop Face! 🫧</title>
-    <meta name="description" content="Pop Face - A fun clicker game! Click the face to pop it! Challenge your friends!">
+    <title>POP PING! 🫧</title>
+    <meta name="description" content="POP PING - A fun clicker game! Click the face to pop it! Challenge your friends!">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -980,7 +980,7 @@
 
     <!-- Header -->
     <div class="header">
-        <h1 class="title">Pop Face! 🫧</h1>
+        <h1 class="title">POP PING! 🫧</h1>
         <p class="subtitle">click the face. you know you want to.</p>
     </div>
 
@@ -995,7 +995,7 @@
         <div class="glow-ring"></div>
         <div class="pop-ring" id="popRing"></div>
         <div class="face-container" id="faceContainer">
-            <img id="faceImg" src="face1.jpg" alt="Pop Face">
+            <img id="faceImg" src="face1.jpg" alt="POP PING">
         </div>
     </div>
 
@@ -1023,7 +1023,7 @@
     <div class="modal-overlay" id="nameModal">
         <div class="modal">
             <div class="modal-emoji">🫧</div>
-            <div class="modal-title">Welcome to Pop Face!</div>
+            <div class="modal-title">Welcome to POP PING!</div>
             <div class="modal-subtitle">What should we call you?</div>
             <input type="text" class="modal-input" id="nameInput" placeholder="Your name..." maxlength="20"
                 autocomplete="off">
@@ -1393,10 +1393,10 @@
 
         // ========== SHARE ==========
         function shareScore() {
-            const text = `🫧 Pop Face! 🫧\n\nI got ${count.toLocaleString()} pops! 💀\nCan you beat me?\n\nPlay now: ${window.location.href}`;
+            const text = `🫧 POP PING! 🫧\n\nI got ${count.toLocaleString()} pops! 💀\nCan you beat me?\n\nPlay now: ${window.location.href}`;
 
             if (navigator.share) {
-                navigator.share({ title: 'Pop Face!', text: text, url: window.location.href }).catch(() => { });
+                navigator.share({ title: 'POP PING!', text: text, url: window.location.href }).catch(() => { });
             } else if (navigator.clipboard) {
                 navigator.clipboard.writeText(text).then(() => {
                     showToast('Score copied! Send to friends! 📤');
